@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    Project: Defence & Border Surveillance Decision Dashboard
+    Subject: Web Programming
+    Semester: [Your Semester Here]
+    College: [Your College Name Here]
+    Student: [Your Name Here]
+    Academic Year: 2025-2026
+  -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Defence & Border Surveillance Dashboard</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+</head>
+<body>
+ 
+  <!-- SIDEBAR NAV -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-shield-halved"></i></div>
+      <div class="brand-text">
+        <span class="brand-title">SENTINEL</span>
+        <span class="brand-sub">Border Command</span>
+      </div>
+    </div>
+ 
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-item active">
+        <i class="fas fa-gauge-high"></i><span>Dashboard</span>
+      </a></li>
+      <li><a href="pages/threat.html" class="nav-item">
+        <i class="fas fa-triangle-exclamation"></i><span>Threat Assessment</span>
+      </a></li>
+      <li><a href="pages/patrol.html" class="nav-item">
+        <i class="fas fa-route"></i><span>Patrol Planning</span>
+      </a></li>
+    </ul>
+ 
+    <div class="sidebar-status">
+      <div class="status-dot pulse"></div>
+      <span>SYSTEM ONLINE</span>
+    </div>
+  </nav>
+ 
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+ 
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="page-title">
+          <h1>Command Dashboard</h1>
+          <p>Real-time border surveillance overview</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="clock-box">
+          <i class="fas fa-clock"></i>
+          <span id="live-clock"></span>
+        </div>
+        <div class="alert-badge" id="alert-badge">
+          <i class="fas fa-bell"></i>
+          <span class="badge-count">3</span>
+        </div>
+      </div>
+    </header>
+ 
+    <!-- STATS CARDS -->
+    <section class="stats-grid">
+      <div class="stat-card critical">
+        <div class="stat-icon"><i class="fas fa-radiation"></i></div>
+        <div class="stat-info">
+          <span class="stat-label">Active Threats</span>
+          <span class="stat-value" id="stat-threats">7</span>
+          <span class="stat-change up">+2 since last hour</span>
+        </div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-icon"><i class="fas fa-person-walking-arrow-right"></i></div>
+        <div class="stat-info">
+          <span class="stat-label">Border Incidents</span>
+          <span class="stat-value" id="stat-incidents">12</span>
+          <span class="stat-change">Today</span>
+        </div>
+      </div>
+      <div class="stat-card safe">
+        <div class="stat-icon"><i class="fas fa-user-shield"></i></div>
+        <div class="stat-info">
+          <span class="stat-label">Patrols Active</span>
+          <span class="stat-value" id="stat-patrols">24</span>
+          <span class="stat-change">Units deployed</span>
+        </div>
+      </div>
+      <div class="stat-card info">
+        <div class="stat-icon"><i class="fas fa-satellite-dish"></i></div>
+        <div class="stat-info">
+          <span class="stat-label">Sensors Online</span>
+          <span class="stat-value" id="stat-sensors">98<span style="font-size:1rem">%</span></span>
+          <span class="stat-change safe">All systems nominal</span>
+        </div>
+      </div>
+    </section>
+ 
+    <!-- MAP + RECENT ALERTS -->
+    <section class="middle-row">
+      <div class="map-card card">
+        <div class="card-header">
+          <h2><i class="fas fa-map-location-dot"></i> Live Surveillance Map</h2>
+          <div class="map-legend">
+            <span class="legend-dot red"></span>High
+            <span class="legend-dot amber"></span>Medium
+            <span class="legend-dot green"></span>Clear
+          </div>
+        </div>
+        <div id="map"></div>
+        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> · Tiles © <a href="https://leafletjs.com" target="_blank">Leaflet</a></p>
+      </div>
+ 
+      <div class="alerts-card card">
+        <div class="card-header">
+          <h2><i class="fas fa-bell"></i> Recent Alerts</h2>
+          <span class="live-tag">LIVE</span>
+        </div>
+        <ul class="alert-list" id="alert-list">
+          <li class="alert-item high">
+            <div class="alert-icon"><i class="fas fa-radiation"></i></div>
+            <div class="alert-body">
+              <span class="alert-title">Unauthorized crossing detected</span>
+              <span class="alert-meta">Sector 4-Alpha · 2 min ago</span>
+            </div>
+            <span class="severity-tag high">HIGH</span>
+          </li>
+          <li class="alert-item medium">
+            <div class="alert-icon"><i class="fas fa-eye"></i></div>
+            <div class="alert-body">
+              <span class="alert-title">Suspicious vehicle movement</span>
+              <span class="alert-meta">Sector 2-Charlie · 8 min ago</span>
+            </div>
+            <span class="severity-tag medium">MED</span>
+          </li>
+          <li class="alert-item low">
+            <div class="alert-icon"><i class="fas fa-wifi"></i></div>
+            <div class="alert-body">
+              <span class="alert-title">Signal anomaly — Sensor 17B</span>
+              <span class="alert-meta">North perimeter · 15 min ago</span>
+            </div>
+            <span class="severity-tag low">LOW</span>
+          </li>
+          <li class="alert-item high">
+            <div class="alert-icon"><i class="fas fa-person-running"></i></div>
+            <div class="alert-body">
+              <span class="alert-title">Motion detected in restricted zone</span>
+              <span class="alert-meta">Sector 6-Bravo · 21 min ago</span>
+            </div>
+            <span class="severity-tag high">HIGH</span>
+          </li>
+          <li class="alert-item medium">
+            <div class="alert-icon"><i class="fas fa-drone"></i></div>
+            <div class="alert-body">
+              <span class="alert-title">Unregistered drone spotted</span>
+              <span class="alert-meta">Eastern corridor · 34 min ago</span>
+            </div>
+            <span class="severity-tag medium">MED</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+ 
+    <!-- QUICK ACCESS -->
+    <section class="quick-access">
+      <a href="pages/threat.html" class="quick-card threat-card">
+        <div class="qc-icon"><i class="fas fa-triangle-exclamation"></i></div>
+        <div class="qc-text">
+          <h3>Threat Assessment</h3>
+          <p>View and analyse all active and historical threats by severity and sector</p>
+        </div>
+        <i class="fas fa-arrow-right qc-arrow"></i>
+      </a>
+      <a href="pages/patrol.html" class="quick-card patrol-card">
+        <div class="qc-icon"><i class="fas fa-route"></i></div>
+        <div class="qc-text">
+          <h3>Patrol Planning</h3>
+          <p>Manage patrol routes, schedules, and unit assignments across all sectors</p>
+        </div>
+        <i class="fas fa-arrow-right qc-arrow"></i>
+      </a>
+    </section>
+ 
+    <footer class="footer">
+      <p>Defence & Border Surveillance Decision Dashboard · Academic Project · Web Programming · <a href="https://leafletjs.com" target="_blank">Leaflet.js</a> · Map © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> · Icons © <a href="https://fontawesome.com" target="_blank">Font Awesome</a></p>
+    </footer>
+ 
+  </main>
+ 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
