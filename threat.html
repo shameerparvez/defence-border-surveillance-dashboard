@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Threat Assessment · SENTINEL</title>
+  <link rel="stylesheet" href="../style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .filter-bar{display:flex;gap:10px;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+    .filter-label{font-size:.75rem;color:var(--text-muted);letter-spacing:.5px;}
+    .filter-btn{padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);font-family:var(--font-head);font-size:.82rem;cursor:pointer;transition:all .2s;}
+    .filter-btn:hover,.filter-btn.active{background:var(--accent-dim);color:var(--accent);border-color:var(--border-bright);}
+    .filter-btn.f-high.active{background:var(--red-dim);color:var(--red);border-color:rgba(255,59,59,.4);}
+    .filter-btn.f-medium.active{background:var(--amber-dim);color:var(--amber);border-color:rgba(255,176,32,.4);}
+    .threat-table-wrap{overflow-x:auto;padding:0 1.25rem 1.25rem;}
+    table{width:100%;border-collapse:collapse;font-size:.82rem;}
+    thead th{font-family:var(--font-head);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);}
+    tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+    tbody tr:hover{background:rgba(255,255,255,.025);}
+    tbody td{padding:12px;color:var(--text-primary);vertical-align:middle;}
+    .td-id{font-family:var(--font-mono);color:var(--text-muted);font-size:.75rem;}
+    .td-sector{font-family:var(--font-mono);font-size:.78rem;color:var(--accent);}
+    .status-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.68rem;font-family:var(--font-mono);font-weight:700;letter-spacing:1px;}
+    .status-pill.active{background:var(--red-dim);color:var(--red);border:1px solid rgba(255,59,59,.3);}
+    .status-pill.monitor{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(255,176,32,.3);}
+    .status-pill.resolved{background:var(--green-dim);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+    .summary-row{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+    .summary-chip{padding:6px 16px;border-radius:8px;font-size:.78rem;font-family:var(--font-head);display:flex;align-items:center;gap:6px;}
+    .summary-chip.high{background:var(--red-dim);color:var(--red);}
+    .summary-chip.medium{background:var(--amber-dim);color:var(--amber);}
+    .summary-chip.low{background:var(--accent-dim);color:var(--accent);}
+  </style>
+</head>
+<body>
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-shield-halved"></i></div>
+      <div class="brand-text"><span class="brand-title">SENTINEL</span><span class="brand-sub">Border Command</span></div>
+    </div>
+    <ul class="nav-links">
+      <li><a href="../index.html" class="nav-item"><i class="fas fa-gauge-high"></i><span>Dashboard</span></a></li>
+      <li><a href="threat.html" class="nav-item active"><i class="fas fa-triangle-exclamation"></i><span>Threat Assessment</span></a></li>
+      <li><a href="patrol.html" class="nav-item"><i class="fas fa-route"></i><span>Patrol Planning</span></a></li>
+    </ul>
+    <div class="sidebar-status"><div class="status-dot pulse"></div><span>SYSTEM ONLINE</span></div>
+  </nav>
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="page-title"><h1>Threat Assessment</h1><p>All active and historical threats by severity and sector</p></div>
+      </div>
+      <div class="topbar-right">
+        <div class="clock-box"><i class="fas fa-clock"></i><span id="live-clock"></span></div>
+      </div>
+    </header>
+    <div class="summary-row">
+      <div class="summary-chip high"><i class="fas fa-circle-exclamation"></i> 4 High Threats</div>
+      <div class="summary-chip medium"><i class="fas fa-triangle-exclamation"></i> 5 Medium Threats</div>
+      <div class="summary-chip low"><i class="fas fa-circle-info"></i> 3 Low Priority</div>
+    </div>
+    <div class="card">
+      <div class="filter-bar">
+        <span class="filter-label">FILTER:</span>
+        <button class="filter-btn active" onclick="filterThreats('all',this)">All</button>
+        <button class="filter-btn f-high" onclick="filterThreats('high',this)">High</button>
+        <button class="filter-btn f-medium" onclick="filterThreats('medium',this)">Medium</button>
+        <button class="filter-btn f-low" onclick="filterThreats('low',this)">Low</button>
+      </div>
+      <div class="threat-table-wrap">
+        <table id="threat-table">
+          <thead><tr><th>Threat ID</th><th>Description</th><th>Sector</th><th>Severity</th><th>Detected</th><th>Status</th><th>Assigned Unit</th></tr></thead>
+          <tbody id="threat-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <footer class="footer"><p>Defence & Border Surveillance Decision Dashboard &middot; Academic Project &middot; Web Programming &middot; Icons &copy; <a href="https://fontawesome.com" target="_blank">Font Awesome</a></p></footer>
+  </main>
+  <script>
+    function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+    function updateClock(){const el=document.getElementById('live-clock');if(el)el.textContent=new Date().toLocaleTimeString('en-IN',{hour12:false});}
+    updateClock();setInterval(updateClock,1000);
+    const threats=[
+      {id:'TH-001',desc:'Unauthorized border crossing detected',sector:'4-Alpha',severity:'high',time:'06:14',status:'active',unit:'Unit Bravo-2'},
+      {id:'TH-002',desc:'Motion in restricted perimeter zone',sector:'6-Bravo',severity:'high',time:'06:31',status:'active',unit:'Unit Alpha-1'},
+      {id:'TH-003',desc:'Unidentified vehicle approaching fence',sector:'2-Charlie',severity:'high',time:'07:05',status:'active',unit:'Unit Delta-4'},
+      {id:'TH-004',desc:'Armed group suspected near checkpoint',sector:'9-Delta',severity:'high',time:'07:48',status:'active',unit:'Unit Foxtrot-3'},
+      {id:'TH-005',desc:'Suspicious vehicle - erratic movement',sector:'2-Charlie',severity:'medium',time:'05:50',status:'monitor',unit:'Unit Echo-1'},
+      {id:'TH-006',desc:'Unregistered drone over airspace',sector:'East Corr.',severity:'medium',time:'06:00',status:'monitor',unit:'Air Watch-1'},
+      {id:'TH-007',desc:'Unknown individual near water inlet',sector:'7-Golf',severity:'medium',time:'06:45',status:'monitor',unit:'Unit Charlie-2'},
+      {id:'TH-008',desc:'Fence tamper attempt - south end',sector:'3-Foxtrot',severity:'medium',time:'07:20',status:'monitor',unit:'Unit Delta-1'},
+      {id:'TH-009',desc:'Signal jamming near comms tower',sector:'North-1',severity:'medium',time:'08:00',status:'monitor',unit:'Tech Unit-2'},
+      {id:'TH-010',desc:'Sensor 17B signal anomaly',sector:'North Peri.',severity:'low',time:'05:30',status:'monitor',unit:'Tech Unit-1'},
+      {id:'TH-011',desc:'Loose livestock near barrier - cleared',sector:'5-Echo',severity:'low',time:'04:55',status:'resolved',unit:'Unit Alpha-3'},
+      {id:'TH-012',desc:'Civilian lost near buffer zone - escorted',sector:'1-Hotel',severity:'low',time:'03:40',status:'resolved',unit:'Unit Bravo-1'},
+    ];
+    function renderTable(data){
+      document.getElementById('threat-body').innerHTML=data.map(t=>`
+        <tr data-severity="${t.severity}">
+          <td class="td-id">${t.id}</td><td>${t.desc}</td>
+          <td class="td-sector">${t.sector}</td>
+          <td><span class="severity-tag ${t.severity}">${t.severity.toUpperCase()}</span></td>
+          <td style="font-family:var(--font-mono);font-size:.75rem;color:var(--text-muted)">${t.time}</td>
+          <td><span class="status-pill ${t.status}">${t.status.toUpperCase()}</span></td>
+          <td style="font-size:.78rem;color:var(--text-secondary)">${t.unit}</td>
+        </tr>`).join('');
+    }
+    function filterThreats(level,btn){
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      renderTable(level==='all'?threats:threats.filter(t=>t.severity===level));
+    }
+    renderTable(threats);
+  </script>
+</body>
+</html>

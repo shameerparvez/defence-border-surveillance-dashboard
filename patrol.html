@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patrol Planning · SENTINEL</title>
+  <link rel="stylesheet" href="../style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .patrol-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+    @media(max-width:768px){.patrol-grid{grid-template-columns:1fr;}}
+    .patrol-table-wrap{overflow-x:auto;padding:0 1.25rem 1.25rem;}
+    table{width:100%;border-collapse:collapse;font-size:.82rem;}
+    thead th{font-family:var(--font-head);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);}
+    tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+    tbody tr:hover{background:rgba(255,255,255,.025);}
+    tbody td{padding:12px;color:var(--text-primary);vertical-align:middle;}
+    .td-id{font-family:var(--font-mono);color:var(--text-muted);font-size:.75rem;}
+    .td-time{font-family:var(--font-mono);font-size:.78rem;color:var(--accent);}
+    .patrol-status{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.68rem;font-family:var(--font-mono);font-weight:700;letter-spacing:1px;}
+    .patrol-status.ongoing{background:var(--green-dim);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+    .patrol-status.scheduled{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(0,200,255,.3);}
+    .patrol-status.completed{background:rgba(122,155,181,.1);color:var(--text-muted);border:1px solid var(--border);}
+    .patrol-status.standby{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(255,176,32,.3);}
+    .unit-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;background:var(--bg-secondary);font-size:.75rem;font-family:var(--font-mono);border:1px solid var(--border);}
+    .shift-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;}
+    .shift-card h3{font-family:var(--font-head);font-size:.85rem;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:.75rem;}
+    .shift-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:.8rem;}
+    .shift-row:last-child{border-bottom:none;}
+    .shift-name{color:var(--text-primary);}
+    .shift-time{font-family:var(--font-mono);color:var(--accent);font-size:.75rem;}
+    .shift-count{color:var(--text-muted);font-size:.75rem;}
+  </style>
+</head>
+<body>
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-shield-halved"></i></div>
+      <div class="brand-text"><span class="brand-title">SENTINEL</span><span class="brand-sub">Border Command</span></div>
+    </div>
+    <ul class="nav-links">
+      <li><a href="../index.html" class="nav-item"><i class="fas fa-gauge-high"></i><span>Dashboard</span></a></li>
+      <li><a href="threat.html" class="nav-item"><i class="fas fa-triangle-exclamation"></i><span>Threat Assessment</span></a></li>
+      <li><a href="patrol.html" class="nav-item active"><i class="fas fa-route"></i><span>Patrol Planning</span></a></li>
+    </ul>
+    <div class="sidebar-status"><div class="status-dot pulse"></div><span>SYSTEM ONLINE</span></div>
+  </nav>
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="page-title"><h1>Patrol Planning</h1><p>Manage routes, schedules, and unit assignments</p></div>
+      </div>
+      <div class="topbar-right">
+        <div class="clock-box"><i class="fas fa-clock"></i><span id="live-clock"></span></div>
+      </div>
+    </header>
+ 
+    <div class="patrol-grid">
+      <div class="shift-card">
+        <h3><i class="fas fa-sun" style="color:var(--amber);margin-right:6px"></i>Day Shifts</h3>
+        <div class="shift-row"><span class="shift-name">Alpha Company</span><span class="shift-time">06:00 – 14:00</span><span class="shift-count">8 units</span></div>
+        <div class="shift-row"><span class="shift-name">Bravo Company</span><span class="shift-time">08:00 – 16:00</span><span class="shift-count">6 units</span></div>
+        <div class="shift-row"><span class="shift-name">Charlie Recon</span><span class="shift-time">07:00 – 13:00</span><span class="shift-count">4 units</span></div>
+      </div>
+      <div class="shift-card">
+        <h3><i class="fas fa-moon" style="color:var(--accent);margin-right:6px"></i>Night Shifts</h3>
+        <div class="shift-row"><span class="shift-name">Delta Company</span><span class="shift-time">18:00 – 02:00</span><span class="shift-count">8 units</span></div>
+        <div class="shift-row"><span class="shift-name">Echo Surveillance</span><span class="shift-time">20:00 – 04:00</span><span class="shift-count">5 units</span></div>
+        <div class="shift-row"><span class="shift-name">Foxtrot Rapid</span><span class="shift-time">00:00 – 06:00</span><span class="shift-count">4 units</span></div>
+      </div>
+    </div>
+ 
+    <div class="card">
+      <div class="card-header">
+        <h2><i class="fas fa-list-check"></i> Patrol Schedule — Today</h2>
+      </div>
+      <div class="patrol-table-wrap">
+        <table>
+          <thead><tr><th>Patrol ID</th><th>Unit</th><th>Route / Sector</th><th>Start</th><th>End</th><th>Mode</th><th>Status</th><th>Commander</th></tr></thead>
+          <tbody id="patrol-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <footer class="footer"><p>Defence & Border Surveillance Decision Dashboard &middot; Academic Project &middot; Web Programming &middot; Icons &copy; <a href="https://fontawesome.com" target="_blank">Font Awesome</a></p></footer>
+  </main>
+  <script>
+    function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+    function updateClock(){const el=document.getElementById('live-clock');if(el)el.textContent=new Date().toLocaleTimeString('en-IN',{hour12:false});}
+    updateClock();setInterval(updateClock,1000);
+    const patrols=[
+      {id:'PR-001',unit:'Alpha-1',route:'Sector 4-Alpha North Fence',start:'06:00',end:'10:00',mode:'Ground',status:'ongoing',cmd:'Lt. Rajan'},
+      {id:'PR-002',unit:'Alpha-2',route:'Sector 4-Alpha River Bank',start:'06:00',end:'10:00',mode:'Ground',status:'ongoing',cmd:'Lt. Meera'},
+      {id:'PR-003',unit:'Bravo-1',route:'Sector 6-Bravo East Ridge',start:'08:00',end:'14:00',mode:'Ground',status:'ongoing',cmd:'Capt. Singh'},
+      {id:'PR-004',unit:'Bravo-2',route:'Sector 2-Charlie Highway',start:'08:00',end:'12:00',mode:'Vehicle',status:'ongoing',cmd:'Lt. Kumar'},
+      {id:'PR-005',unit:'Charlie-1',route:'North Perimeter Sensors',start:'07:00',end:'13:00',mode:'Ground',status:'completed',cmd:'Sgt. Priya'},
+      {id:'PR-006',unit:'Charlie-2',route:'Sector 7-Golf Water Inlet',start:'09:00',end:'15:00',mode:'Boat',status:'ongoing',cmd:'Lt. Arjun'},
+      {id:'PR-007',unit:'Air Watch-1',route:'Eastern Corridor Airspace',start:'06:30',end:'10:30',mode:'Drone',status:'completed',cmd:'Flt. Lt. Roy'},
+      {id:'PR-008',unit:'Delta-1',route:'Sector 3-Foxtrot South Fence',start:'18:00',end:'22:00',mode:'Ground',status:'scheduled',cmd:'Capt. Nair'},
+      {id:'PR-009',unit:'Delta-4',route:'Sector 2-Charlie Highway',start:'14:00',end:'20:00',mode:'Vehicle',status:'scheduled',cmd:'Lt. Verma'},
+      {id:'PR-010',unit:'Echo-1',route:'Sector 2-Charlie Surveillance',start:'20:00',end:'02:00',mode:'Ground',status:'scheduled',cmd:'Sgt. Devi'},
+      {id:'PR-011',unit:'Foxtrot-3',route:'Sector 9-Delta Checkpoint',start:'00:00',end:'06:00',mode:'Ground',status:'standby',cmd:'Lt. Shah'},
+      {id:'PR-012',unit:'Tech-1',route:'North Perimeter — Sensor Check',start:'10:00',end:'12:00',mode:'Ground',status:'scheduled',cmd:'Sgt. Raj'},
+    ];
+    document.getElementById('patrol-body').innerHTML=patrols.map(p=>`
+      <tr>
+        <td class="td-id">${p.id}</td>
+        <td><span class="unit-badge"><i class="fas fa-user-shield" style="font-size:.7rem"></i>${p.unit}</span></td>
+        <td>${p.route}</td>
+        <td class="td-time">${p.start}</td>
+        <td class="td-time">${p.end}</td>
+        <td style="font-size:.78rem;color:var(--text-secondary)">${p.mode}</td>
+        <td><span class="patrol-status ${p.status}">${p.status.toUpperCase()}</span></td>
+        <td style="font-size:.78rem;color:var(--text-secondary)">${p.cmd}</td>
+      </tr>`).join('');
+  </script>
+</body>
+</html>
